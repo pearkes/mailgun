@@ -124,9 +124,13 @@ func checkResp(resp *http.Response, err error) (*http.Response, error) {
 		return resp, nil
 	case i == 204:
 		return resp, nil
-	case i == 422:
-		return nil, parseErr(resp)
 	case i == 400:
+		return nil, parseErr(resp)
+	case i == 401:
+		return nil, parseErr(resp)
+	case i == 402:
+		return nil, parseErr(resp)
+	case i == 422:
 		return nil, parseErr(resp)
 	default:
 		return nil, fmt.Errorf("API Error: %s", resp.Status)
