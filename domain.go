@@ -41,7 +41,7 @@ func (c *Client) CreateDomain(opts *CreateDomain) (string, error) {
 
 	params["name"] = opts.Name
 	params["smtp_password"] = opts.SmtpPassword
-	params["smap_action"] = opts.SpamAction
+	params["spam_action"] = opts.SpamAction
 	params["wildcard"] = strconv.FormatBool(opts.Wildcard)
 
 	req, err := c.NewRequest(params, "POST", "/domains")

@@ -14,7 +14,10 @@ func (s *S) Test_CreateDomain(c *C) {
 	testServer.Response(202, nil, domainExample)
 
 	opts := CreateDomain{
-		Name: "example.com",
+		Name:         "example.com",
+		SpamAction:   "disabled",
+		Wildcard:     true,
+		SmtpPassword: "foobar",
 	}
 
 	id, err := s.client.CreateDomain(&opts)
@@ -22,6 +25,9 @@ func (s *S) Test_CreateDomain(c *C) {
 	req := testServer.WaitRequest()
 
 	c.Assert(req.Form["name"], DeepEquals, []string{"example.com"})
+	c.Assert(req.Form["spam_action"], DeepEquals, []string{"disabled"})
+	c.Assert(req.Form["wildcard"], DeepEquals, []string{"true"})
+	c.Assert(req.Form["smtp_password"], DeepEquals, []string{"foobar"})
 	c.Assert(err, IsNil)
 	c.Assert(id, Equals, "domain.com")
 }
