@@ -6,7 +6,9 @@ import (
 )
 
 type DomainResponse struct {
-	Domain Domain `json:"domain"`
+	Domain           Domain            `json:"domain"`
+	SendingRecords   []SendingRecord   `json:"sending_dns_records"`
+	ReceivingRecords []ReceivingRecord `json:"receiving_dns_records"`
 }
 
 // Domain is used to represent a retrieved Domain. All properties
@@ -17,6 +19,20 @@ type Domain struct {
 	SmtpPassword string `json:"smtp_password"`
 	SpamAction   string `json:"spam_action"`
 	Wildcard     bool   `json:"wildcard"`
+}
+
+type SendingRecord struct {
+	Name       string `json:"name"`
+	RecordType string `json:"record_type"`
+	Valid      string `json:"valid"`
+	Value      string `json:"value"`
+}
+
+type ReceivingRecord struct {
+	Priority   string `json:"priority"`
+	RecordType string `json:"record_type"`
+	Valid      string `json:"valid"`
+	Value      string `json:"value"`
 }
 
 func (d *Domain) StringWildcard() string {
@@ -87,29 +103,29 @@ func (c *Client) DestroyDomain(name string) error {
 	return nil
 }
 
-// RetrieveDomain gets  a domain by the ID specified and
-// returns a Domain and an error. An error will be returned for failed
-// requests with a nil Domain.
-func (c *Client) RetrieveDomain(name string) (Domain, error) {
+// RetrieveDomain gets a domain and records by the ID specified and
+// returns a DomainResponse and an error. An error will be returned for failed
+// requests with a nil DomainResponse.
+func (c *Client) RetrieveDomain(name string) (DomainResponse, error) {
 	req, err := c.NewRequest(map[string]string{}, "GET", fmt.Sprintf("/domains/%s", name))
 
 	if err != nil {
-		return Domain{}, err
+		return DomainResponse{}, err
 	}
 
 	resp, err := checkResp(c.Http.Do(req))
 	if err != nil {
-		return Domain{}, fmt.Errorf("Error destroying domain: %s", err)
+		return DomainResponse{}, fmt.Errorf("Error destroying domain: %s", err)
 	}
 
-	domain := new(DomainResponse)
+	domainresp := new(DomainResponse)
 
-	err = decodeBody(resp, domain)
+	err = decodeBody(resp, domainresp)
 
 	if err != nil {
-		return Domain{}, fmt.Errorf("Error decoding domain response: %s", err)
+		return DomainResponse{}, fmt.Errorf("Error decoding domain response: %s", err)
 	}
 
 	// The request was successful
-	return domain.Domain, nil
+	return *domainresp, nil
 }

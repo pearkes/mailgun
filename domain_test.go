@@ -35,14 +35,16 @@ func (s *S) Test_CreateDomain(c *C) {
 func (s *S) Test_RetrieveDomain(c *C) {
 	testServer.Response(200, nil, domainExample)
 
-	domain, err := s.client.RetrieveDomain("example.com")
+	resp, err := s.client.RetrieveDomain("example.com")
 
 	_ = testServer.WaitRequest()
 
 	c.Assert(err, IsNil)
-	c.Assert(domain.Name, Equals, "domain.com")
-	c.Assert(domain.SmtpPassword, Equals, "4rtqo4p6rrx9")
-	c.Assert(domain.StringWildcard(), Equals, "false")
+	c.Assert(resp.Domain.Name, Equals, "domain.com")
+	c.Assert(resp.Domain.SmtpPassword, Equals, "4rtqo4p6rrx9")
+	c.Assert(resp.Domain.StringWildcard(), Equals, "false")
+	c.Assert(resp.ReceivingRecords[0].Priority, Equals, "10")
+	c.Assert(resp.SendingRecords[0].Value, Equals, "v=spf1 include:mailgun.org ~all")
 }
 
 func (s *S) Test_DestroyDomain(c *C) {
