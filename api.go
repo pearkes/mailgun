@@ -39,7 +39,7 @@ func NewClient(key string) (*Client, error) {
 	client := Client{
 		ApiKey: key,
 		URL:    "https://api.mailgun.net/v2",
-		Http:   http.DefaultClient,
+		Http:   &http.Client{},
 	}
 
 	return &client, nil
